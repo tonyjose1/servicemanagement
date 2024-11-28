@@ -1,0 +1,54 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1>Edit Employee</h1>
+<br>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ employee.id }}">
+    <div class="form-group">
+        <label for="employee_code">Employee Code</label>
+        <input type="text" class="form-control" name="employee_code" value="{{ employee.employee_code }}" required>
+    </div>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" name="name" value="{{ employee.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="age">Age</label>
+        <input type="number" class="form-control" name="age" value="{{ employee.age }}" required>
+    </div>
+    <div class="form-group">
+        <label for="address">Address</label>
+        <textarea class="form-control" name="address" required>{{ employee.address }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="department">Department</label>
+        <input type="text" class="form-control" name="department" value="{{ employee.department }}" required>
+    </div>
+    <div class="form-group">
+        <label for="aadhar_number">Aadhar Number</label>
+        <input type="text" class="form-control" name="aadhar_number" value="{{ employee.aadhar_number }}">
+    </div>
+    <div class="form-group">
+        <label for="pan_card_number">PAN Card Number</label>
+        <input type="text" class="form-control" name="pan_card_number" value="{{ employee.pan_card_number }}">
+    </div>
+    <div class="form-group">
+        <label for="photo">Photo</label>
+        {% if employee.photo %}
+            <img src="{{ employee.photo.url }}" alt="Employee Photo" style="max-width: 150px; margin-bottom: 10px;">
+        {% endif %}
+        <input type="file" class="form-control" name="photo">
+    </div>
+    <div class="form-group">
+        <label for="id_document">ID Document</label>
+        {% if employee.id_document %}
+            <a href="{{ employee.id_document.url }}" target="_blank">View Current Document</a><br>
+        {% endif %}
+        <input type="file" class="form-control" name="id_document">
+    </div>
+    <button type="submit" class="btn btn-primary">Update Employee</button>
+</form>
+{% endblock %}

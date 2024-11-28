@@ -1,0 +1,14 @@
+<!-- employee/templates/employee/update_work.html -->
+{% extends 'employee/base_employee.html' %}
+
+{% block title %}Update Work{% endblock %}
+
+{% block content %}
+<h2>Update Work for Worksite ID: {{ work_id }}</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <textarea name="update_text" required placeholder="Describe what you did today..."></textarea>
+    <input type="file" name="work_image" accept="image/*" required>
+    <button type="submit">Submit Update</button>
+</form>
+{% endblock %}

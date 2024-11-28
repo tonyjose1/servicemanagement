@@ -1,0 +1,79 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+<h1>Allocation List</h1>
+<ul>
+    {% for work in worksites %}
+    <li>
+        <a href="#" class="worksite-link" data-id="{{ work.id }}">{{ work.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<div id="allocationDetails"></div>
+
+<script>
+document.querySelectorAll('.worksite-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        let workId = this.dataset.id;
+        
+        fetch(`/get_allocations_by_work/${workId}/`)
+            .then(response => response.json())
+            .then(data => {
+                let detailsDiv = document.getElementById('allocationDetails');
+                detailsDiv.innerHTML = '<h2>Allocations</h2>';
+                if (data.length > 0) {
+                    let table = '<table class="table table-bordered"><tr><th>Category</th><th>Item</th><th>Supplier</th><th>Quantity</th><th>Date</th></tr>';
+                    data.forEach(allocation => {
+                        table += `<tr><td>${allocation.category}</td><td>${allocation.item}</td><td>${allocation.supplier}</td><td>${allocation.quantity}</td><td>${allocation.date_allocated}</td></tr>`;
+                    });
+                    table += '</table>';
+                    detailsDiv.innerHTML += table;
+                } else {
+                    detailsDiv.innerHTML += '<p>No allocations found for this worksite.</p>';
+                }
+            });
+    });
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+{% comment %} {% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<a href="{% url 'purchase_input' %}" class="btn btn-primary">Add Purchase Input</a>
+
+<br><br>
+<h2>Purchase List</h2>
+<br><br>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Invoice Number</th>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Supplier</th>
+        <th>Amount</th>
+        <th>Spent By</th>
+    </tr>
+    {% for purchase in purchases %}
+    <tr>
+        <td>{{ purchase.id }}</td>
+        <td>{{ purchase.date }}</td>
+        <td>{{ purchase.invoice_number }}</td>
+        <td>{{ purchase.item }}</td>
+        <td>{{ purchase.quantity }}</td>
+        <td>{{ purchase.supplier }}</td>
+        <td>{{ purchase.amount }}</td>
+        <td>{{ purchase.spent_by }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %} {% endcomment %}

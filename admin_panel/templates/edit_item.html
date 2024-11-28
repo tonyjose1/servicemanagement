@@ -1,0 +1,101 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1 class="page-heading mt-4" style="text-decoration: underline;">Edit Item</h1>
+<br><br>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ item.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <select class="form-control" id="category" name="category" onchange="fetchSuppliers()">
+            <option value="{{ item.category }}" selected>{{ item.category }}</option>
+            {% for category in categories %}
+                {% if category != item.category %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <input type="text" class="form-control mt-2" id="new_category" name="new_category" placeholder="Add new category (optional)">
+    </div>
+    <div class="form-group">
+        <label for="supplier">Supplier:</label>
+        <select class="form-control" id="supplier" name="supplier">
+            {% if current_supplier %}
+                <option value="{{ current_supplier.id }}" selected>{{ current_supplier.name }}</option>
+            {% else %}
+                <option value="">Select a Supplier</option>
+            {% endif %}
+        </select>
+        <input type="text" class="form-control mt-2" id="new_supplier" name="new_supplier" placeholder="Add new supplier (optional)">
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" class="form-control" id="price" name="price" step="0.01" value="{{ item.price }}" required>
+    </div>
+    <div class="form-group">
+        <label for="stock_quantity">Stock Quantity:</label>
+        <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" step="1" min="0" value="{{ item.stock_quantity }}" required>
+    </div>
+    <br>
+    <button type="submit" class="btn button">Update Item</button>
+</form>
+
+<script>
+    function fetchSuppliers() {
+        const category = document.getElementById("category").value;
+        const supplierDropdown = document.getElementById("supplier");
+
+        supplierDropdown.innerHTML = '<option value="">Loading...</option>';
+
+        fetch(`/admin_panel/get-suppliers/?category=${category}`)
+            .then(response => response.json())
+            .then(data => {
+                supplierDropdown.innerHTML = '<option value="">Select a Supplier</option>';
+                data.suppliers.forEach(supplier => {
+                    const option = document.createElement("option");
+                    option.value = supplier.id;
+                    option.textContent = supplier.name;
+                    supplierDropdown.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching suppliers:", error);
+                supplierDropdown.innerHTML = '<option value="">Error loading suppliers</option>';
+            });
+    }
+</script>
+{% endblock %}
+
+
+
+
+
+{% comment %} {% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+    <h1 class="page-heading mt-4" style="text-decoration: underline;">Edit Item</h1>
+    <br><br>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ item.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <input type="text" class="form-control" id="category" name="category" value="{{ item.category }}" required>
+        </div>
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" class="form-control" id="price" name="price" step="0.01" value="{{ item.price }}" required>
+        </div>
+        <br>
+        <button type="submit" class="btn button">Update Item</button>
+    </form>
+{% endblock %} {% endcomment %}

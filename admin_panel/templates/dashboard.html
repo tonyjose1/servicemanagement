@@ -1,0 +1,332 @@
+
+
+
+ <!-- admin_panel/templates/dashboard.html -->
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<br>
+<h1 class="dashboard-title">Dashboard</h1>
+<br>
+<div class="dashboard-buttons" style="text-align: center;">
+    <a href="{% url 'add_worksite' %}" class="button" style="margin: 0 10px;">
+        <img src="https://img.icons8.com/ios-filled/50/4A90E2/add.png" alt="Add Worksite" class="icon" style="width: 30px; height: 30px;"> Add Worksite
+    </a>
+    <button onclick="showReminderModalAgain()" class="button" style="margin: 0 10px;">
+        <img src="https://img.icons8.com/ios-filled/50/4A90E2/alarm.png" alt="Reminders" class="icon" style="width: 30px; height: 30px;"> View Reminders
+    </button>
+    <a href="{% url 'group_chat' %}" class="button" style="margin: 0 10px;">
+        <img src="https://img.icons8.com/ios-filled/50/4A90E2/add.png" alt="Add Worksite" class="icon" style="width: 30px; height: 30px;"> Go to Group Chat
+    </a>
+    
+</div>
+
+
+<form method="GET" class="search-form">
+    <input type="text" name="search" placeholder="Search by client name or worksite name" value="{{ search_query }}">
+    <select name="filter_priority">
+        <option value="">All Priorities</option>
+        <option value="low" {% if filter_priority == 'low' %}selected{% endif %}>Low</option>
+        <option value="medium" {% if filter_priority == 'medium' %}selected{% endif %}>Medium</option>
+        <option value="high" {% if filter_priority == 'high' %}selected{% endif %}>High</option>
+    </select>
+    <select name="filter_status">
+        <option value="">All Statuses</option>
+        <option value="assigned" {% if filter_status == 'assigned' %}selected{% endif %}>Assigned</option>
+        <option value="working" {% if filter_status == 'working' %}selected{% endif %}>Working</option>
+        <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="completed" {% if filter_status == 'completed' %}selected{% endif %}>Completed</option>
+    </select>
+    <select name="sort_by">
+        <option value="id" {% if sort_by == 'id' %}selected{% endif %}>Sort by ID</option>
+        <option value="start_date" {% if sort_by == 'start_date' %}selected{% endif %}>Start Date (Oldest First)</option>
+        <option value="-start_date" {% if sort_by == '-start_date' %}selected{% endif %}>Start Date (Latest First)</option>
+        <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>Priority</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<table class="worksite-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Client Name</th>
+            <th>Location</th>
+            <th>Contact Number</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Priority</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for worksite in works %}
+        <tr>
+            <td>{{ worksite.id }}</td>
+            <td>{{ worksite.customer.name }}</td>
+            <td>{{ worksite.customer.location }}</td>
+            <td>{{ worksite.customer.contact_number }}</td>
+            <td>{{ worksite.start_date }}</td>
+            <td>{{ worksite.end_date }}</td>
+            <td>{{ worksite.priority }}</td>
+            <td class="action-buttons">
+                <a href="{% url 'worksite_details' worksite.id %}" class="table-button">View</a>
+                <a href="{% url 'edit_worksite' worksite.id %}" class="table-button">Edit</a>
+                <a href="#" class="table-button" onclick="confirmDelete({{ worksite.id }})">Delete</a>
+                <a href="{% url 'view_updates' worksite.id %}" class="table-button">View Updates</a>
+                <a href="{% url 'generate_bill' worksite.id %}" class="table-button">Generate Bill</a>
+                
+                <a href="{% url 'view_payments' worksite.id %}" class="table-button">View Payments</a>
+                <a href="{% url 'add_payment' worksite.id %}" class="table-button">Add Payment</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'add_worksite' %}" class="add-worksite-button">Add New Worksite</a>
+
+
+<!-- Modal for displaying worksite details -->
+<div id="worksiteModal" class="modal" style="display: none;> 
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('worksiteModal').style.display='none'">&times;</span>
+        <h2>Worksite Details</h2>
+        <p><strong>ID:</strong> <span id="modal-worksite-id"></span></p>
+        <p><strong>Client Name:</strong> <span id="modal-worksite-client-name"></span></p>
+        <p><strong>Location:</strong> <span id="modal-worksite-location"></span></p>
+        <p><strong>Contact Number:</strong> <span id="modal-worksite-contact-number"></span></p>
+        <p><strong>Start Date:</strong> <span id="modal-worksite-start-date"></span></p>
+        <p><strong>End Date:</strong> <span id="modal-worksite-end-date"></span></p>
+        <p><strong>Priority:</strong> <span id="modal-worksite-priority"></span></p>
+        <p><strong>Work Type:</strong> <span id="modal-worksite-work-type"></span></p>
+        <p><strong>Assigned Employees:</strong> <span id="modal-worksite-employees"></span></p>
+        <p><strong>Total Amount:</strong> <span id="modal-worksite-total-amount"></span></p>
+    </div>
+</div>
+
+
+<div id="reminderModal" class="modal2">
+    <div class="modal-content2">
+        <span class="close2" onclick="closeReminderModal()">&times;</span>
+        <p id="reminder-message">
+            <strong>There are worksites with deadlines within the next week!</strong>
+        </p>
+        <!-- New Close Button -->
+        <button class="close-btn" onclick="closeReminderModal()">Close</button>
+    </div>
+</div>
+
+
+
+<style>
+    /* Updated Styles for Reminder Modal */
+    #reminderModal.modal2 {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Slightly darker background for readability */
+        animation: fadeIn 0.7s ease; /* Slower fade-in for visibility */
+    }
+
+    #reminderModal .modal-content2 {
+        background: linear-gradient(135deg, #f07eb3, #f0758f);
+        color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(255, 117, 143, 0.7); /* Slightly more intense glow */
+        margin: auto;
+        padding: 40px;
+        width: 80%;
+        max-width: 500px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        animation: slideUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; /* More dynamic slide-up */
+        font-family: "Verdana", sans-serif; /* More readable font family */
+        font-size: 18px; /* Larger font size */
+        line-height: 1.6; /* Improved readability */
+        text-align: left;
+    }
+
+    #reminderModal.closing .modal-content2 {
+        animation: slideDown 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; /* New slide-down animation */
+    }
+
+    #reminderModal .close2 {
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    #reminderModal .close2:hover {
+        color: #ffcccb;
+    }
+
+    /* New Close Button Styling */
+    .close-btn {
+        display: block;
+        background-color: #ff4757;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-top: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        width: 100px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .close-btn:hover {
+        background-color: #ff6b81;
+        transform: scale(1.05);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { background-color: rgba(0, 0, 0, 0); }
+        to { background-color: rgba(0, 0, 0, 0.6); }
+    }
+
+    @keyframes slideUp {
+        from { transform: translate(-50%, 60%) scale(0.95); opacity: 0; } /* Start with a small scale */
+        to { transform: translate(-50%, -50%) scale(1); opacity: 1; } /* Smooth scale-up and fade-in */
+    }
+
+    @keyframes slideDown {
+        from { transform: translate(-50%, -50%) scale(1); opacity: 1; } /* Full size and opacity */
+        to { transform: translate(-50%, 60%) scale(0.9); opacity: 0; } /* Slide down and shrink */
+    }
+
+    /* Separator line */
+    hr {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        margin: 10px 0;
+    }
+</style>
+
+
+
+
+<script>
+    // Function to show the Reminder Modal
+    function showReminderModal(worksites) {
+        const reminderMessage = document.getElementById('reminder-message');
+        reminderMessage.innerHTML = "<h3>Upcoming Deadlines</h3> <br><br>";
+    
+        worksites.forEach(worksite => {
+            reminderMessage.innerHTML += `
+                <h4><strong>Title:</strong> ${worksite.title}</h4><br>
+                <p>
+                    <strong>Customer Name:</strong> ${worksite.customer_name}<br>
+                    <strong>Start Date:</strong> ${worksite.start_date}<br>
+                    <strong>End Date:</strong> ${worksite.end_date}<br>
+                    <strong>Status:</strong> ${worksite.status}<br>
+                    <hr>
+                </p>
+            `;
+        });
+    
+        document.getElementById('reminderModal').style.display = 'block';
+    }
+
+    // Function to close the Reminder Modal with animation
+    function closeReminderModal() {
+        const modal = document.getElementById('reminderModal');
+        modal.classList.add('closing');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modal.classList.remove('closing');
+        }, 500);
+    }
+
+    // Function to show the modal again when the button is clicked
+    function showReminderModalAgain() {
+        fetch('/admin_panel/get_upcoming_deadlines/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.reminder && data.reminder.length > 0) {
+                    showReminderModal(data.reminder);
+                }
+            })
+            .catch(error => console.error('Error fetching reminder data:', error));
+    }
+
+    // Fetch upcoming deadlines on page load and only show the modal if it's the first visit
+    window.onload = function() {
+        if (!localStorage.getItem('modalShown')) {
+            fetch('/admin_panel/get_upcoming_deadlines/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.reminder && data.reminder.length > 0) {
+                        showReminderModal(data.reminder);
+                        localStorage.setItem('modalShown', 'true');
+                    }
+                })
+                .catch(error => console.error('Error fetching reminder data:', error));
+        }
+    };
+</script>
+
+
+<script>
+    function confirmDelete(worksiteId) {
+        const confirmation = confirm('Are you sure you want to delete this worksite?');
+        if (confirmation) {
+            window.location.href = "{% url 'delete_worksite' '0' %}".replace('0', worksiteId);
+        }
+    }
+
+    function showDetails(button) {
+        const worksiteId = button.getAttribute('data-id');
+    
+        fetch(`/admin_panel/work/details/${worksiteId}/`)
+            .then(response => response.json())
+            .then(data => {
+                // Update modal fields with the data received
+                document.getElementById('modal-worksite-id').innerText = data.id;
+                document.getElementById('modal-worksite-client-name').innerText = data.customer_name;
+                document.getElementById('modal-worksite-location').innerText = data.location;
+                document.getElementById('modal-worksite-contact-number').innerText = data.contact_number;
+                document.getElementById('modal-worksite-start-date').innerText = data.start_date;
+                document.getElementById('modal-worksite-end-date').innerText = data.end_date;
+                document.getElementById('modal-worksite-priority').innerText = data.priority;
+                document.getElementById('modal-worksite-work-type').innerText = data.work_type;
+                
+                // Display assigned employees
+                const employeeList = data.assigned_employees.join(', ');
+                document.getElementById('modal-worksite-employees').innerText = employeeList;
+    
+                // Display total amount
+                document.getElementById('modal-worksite-total-amount').innerText = `₹${data.total_amount}`;
+    
+                // Show the modal
+                document.getElementById('worksiteModal').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching worksite details:', error));
+    }
+    function closeModal() {
+        document.getElementById('worksiteModal').style.display = 'none';
+    }
+</script>
+
+{% endblock %}
+

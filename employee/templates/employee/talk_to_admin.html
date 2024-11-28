@@ -1,0 +1,13 @@
+<!-- employee/templates/employee/talk_to_admin.html -->
+{% extends 'employee/base_employee.html' %}
+
+{% block title %}Talk to Admin{% endblock %}
+
+{% block content %}
+<h2>Send a Message to Admin for Worksite ID: {{ work_id }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <textarea name="message" required placeholder="Type your message here..."></textarea>
+    <button type="submit">Send Message</button>
+</form>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1 class="page-heading mt-4" style="text-decoration: underline;">Add New Item</h1>
+<br>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <select class="form-control" id="category" name="category" onchange="fetchSuppliers()">
+            <option value="">Select a Category</option>
+            {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" class="form-control mt-2" id="new_category" name="new_category" placeholder="Add new category (optional)">
+    </div>
+    <div class="form-group">
+        <label for="supplier">Supplier:</label>
+        <select class="form-control" id="supplier" name="supplier">
+            <option value="">Select a Supplier</option>
+        </select>
+        <input type="text" class="form-control mt-2" id="new_supplier" name="new_supplier" placeholder="Add new supplier (optional)">
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+    </div>
+    <div class="form-group">
+        <label for="stock_quantity">Stock Quantity:</label>
+        <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" step="1" min="0" required>
+    </div>
+    <button type="submit" class="btn button">Add Item</button>
+</form>
+
+<script>
+    function fetchSuppliers() {
+        const category = document.getElementById("category").value;
+        const supplierDropdown = document.getElementById("supplier");
+
+        supplierDropdown.innerHTML = '<option value="">Loading...</option>';
+
+        fetch(`/admin_panel/get-suppliers/?category=${category}`)
+            .then(response => response.json())
+            .then(data => {
+                supplierDropdown.innerHTML = '<option value="">Select a Supplier</option>';
+                data.suppliers.forEach(supplier => {
+                    const option = document.createElement("option");
+                    option.value = supplier.id;
+                    option.textContent = supplier.name;
+                    supplierDropdown.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching suppliers:", error);
+                supplierDropdown.innerHTML = '<option value="">Error loading suppliers</option>';
+            });
+    }
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1 class="page-heading mt-4" style="text-decoration: underline;">Add New Item</h1>
+<br>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <select class="form-control" id="category" name="category" required onchange="fetchSuppliers()">
+            <option value="">Select a Category</option>
+            {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="supplier">Supplier:</label>
+        <select class="form-control" id="supplier" name="supplier" required>
+            <option value="">Select a Supplier</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+    </div>
+    <button type="submit" class="btn button">Add Item</button>
+</form>
+
+<script>
+    function fetchSuppliers() {
+        const category = document.getElementById("category").value;
+        const supplierDropdown = document.getElementById("supplier");
+
+        supplierDropdown.innerHTML = '<option value="">Loading...</option>';
+
+        fetch(`/admin_panel/get-suppliers/?category=${category}`)
+            .then(response => response.json())
+            .then(data => {
+                supplierDropdown.innerHTML = '<option value="">Select a Supplier</option>';
+                data.suppliers.forEach(supplier => {
+                    const option = document.createElement("option");
+                    option.value = supplier.id;
+                    option.textContent = supplier.name;
+                    supplierDropdown.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching suppliers:", error);
+                supplierDropdown.innerHTML = '<option value="">Error loading suppliers</option>';
+            });
+    }
+</script>
+{% endblock %} {% endcomment %}

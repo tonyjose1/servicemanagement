@@ -1,0 +1,106 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+    <h1 class="page-heading mt-4" style="text-decoration: underline;">Items List</h1> <!-- Heading with top margin and underline -->
+    <br><br>
+    <table class="employee-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Suppliers</th> <!-- New column for Suppliers -->
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in item_supplier_data %}
+                <tr>
+                    <td>{{ data.item.name }}</td>
+                    <td>{{ data.item.category }}</td>
+                    <td>{{ data.item.price }}</td>
+                    <td>{{ data.item.stock_quantity }}</td>
+                    <td>{{ data.suppliers }}</td> <!-- Display supplier names -->
+                    <td>
+                        <button class="btn button-info btn-sm" onclick="viewItem({{ data.item.id }})">View</button>
+                        <a href="{% url 'edit_item' data.item.id %}" class="btn button-primary btn-sm">Edit</a>
+                        <button class="btn button-danger btn-sm" onclick="confirmDelete({{ data.item.id }})">Delete</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br><br>
+
+    <div class="text-center mt-3"> <!-- Centered button with top margin -->
+        <a href="{% url 'add_item' %}" class="add-worksite-button">Add New Item</a>
+    </div>
+
+    <!-- Modal -->
+    <!-- Modal -->
+<div id="supplierModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Item Details</h5>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p><strong>Name:</strong> <span id="itemName"></span></p>
+            <p><strong>Category:</strong> <span id="itemCategory"></span></p>
+            <p><strong>Price:</strong> <span id="itemPrice"></span></p>
+            <p><strong>Suppliers:</strong> <span id="itemSuppliers"></span></p> <!-- New field for suppliers -->
+            <p><strong>Created At:</strong> <span id="itemCreatedAt"></span></p>
+            
+        </div>
+        <div class="modal-footer">
+            <button class="btn button-secondary" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+
+   
+
+<script>
+    function viewItem(itemId) {
+        // Fetch item details from the server
+        fetch(`view/${itemId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Populate modal with item data
+                document.getElementById("itemName").innerText = data.name;
+                document.getElementById("itemCategory").innerText = data.category;
+                document.getElementById("itemPrice").innerText = data.price;
+                document.getElementById("itemCreatedAt").innerText = data.created_at;
+                document.getElementById("itemSuppliers").innerText = data.suppliers; // Add this line
+                
+                // Show the modal
+                document.getElementById("supplierModal").style.display = "block";
+            })
+            .catch(error => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+    }
+    
+    
+    function closeModal() {
+        // Hide the modal
+        document.getElementById("supplierModal").style.display = "none";
+    }
+    
+    function confirmDelete(itemId) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            window.location.href = `delete/${itemId}/`;
+        }
+    }
+    
+</script>
+
+{% endblock %}

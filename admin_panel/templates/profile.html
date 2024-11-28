@@ -1,0 +1,73 @@
+<!-- admin_panel/templates/profile.html -->
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>Profile</h2>
+
+<form method="post" class="profile-form">
+    {% csrf_token %}
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" value="{{ user.username }}" required>
+    <script>console.log("Username:", "{{ user.username }}");</script>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{ user.email }}" required>
+    <script>console.log("Email:", "{{ user.email }}");</script>
+    
+    <label for="contact_number">Contact Number:</label>
+    <input type="text" id="contact_number" name="contact_number" value="{{ user.contact_number }}">
+    <script>console.log("Contact Number:", "{{ user.contact_number }}");</script>
+    
+    <button type="submit">Update Profile</button>
+</form>
+
+<a href="{% url 'logout' %}" class="logout-button">Logout</a>
+
+<style>
+    .profile-form {
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .profile-form label {
+        display: block;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .profile-form input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .profile-form button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4A90E2;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .logout-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #e74c3c;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+        margin-top: 10px;
+        width: 100%;
+    }
+</style>
+
+{% endblock %}

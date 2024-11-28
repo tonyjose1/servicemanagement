@@ -1,0 +1,25 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1>Edit Supplier</h1>
+<br><br>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" name="name" value="{{ supplier.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" class="form-control" name="location" value="{{ supplier.location }}" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" class="form-control" name="category" value="{{ supplier.category }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+<br><br>
+<a href="{% url 'view_suppliers' %}" class="btn btn-secondary mt-3">Back to Supplier List</a>
+{% endblock %}

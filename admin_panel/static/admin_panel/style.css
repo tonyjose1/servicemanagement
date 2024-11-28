@@ -1,0 +1,488 @@
+/* General Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Overall Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    font-size: 16px; /* Increased font size */
+    display: flex;
+    flex-direction: column; /* Stacks children vertically */
+    min-height: 100vh; /* Ensures the body takes full height */
+}
+
+
+/* Header */
+header {
+    background-color: #007bff;
+    padding: 1rem;
+    color: white;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #ffd700;
+}
+
+/* Centered Headings */
+h1{
+    text-align: center;
+    margin-top: 20px; /* Adds top margin */
+    text-decoration: underline; /* Underlines the heading */
+
+
+}
+
+/* Centered Headings */
+h2, h3, h4, h5, h6, table {
+    text-align: center;
+    
+}
+
+/* Dashboard Title */
+.dashboard-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #4A90E2;
+}
+
+/* Button Container and Buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.button, a.button {
+    background-color: #e7f1ff;
+    color: #007bff;
+    padding: 10px 20px; /* Increased padding */
+    border: 1px solid #b0c4de;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px; /* Increased font size */
+    transition: background-color 0.3s, transform 0.2s;
+    display: inline-block;
+    text-align: center;
+}
+
+.button:hover, a.button:hover {
+    background-color: #d0e7ff;
+    transform: translateY(-2px);
+}
+
+/* Ensure anchor tags look like buttons */
+a.table-button {
+    background-color: #4A90E2;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+a.table-button:hover {
+    background-color: #3A78B5;
+}
+
+/* Worksite Table */
+.worksite-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.worksite-table th, .worksite-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.worksite-table th {
+    background-color: #f2f2f2;
+    color: #4A90E2;
+}
+
+.worksite-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.worksite-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Modal Styles */
+#supplierModal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #888;
+    width: 300px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+
+
+.modal-content {
+    text-align: left;
+}
+
+/* Modal Styles */
+.modal {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #888;
+    width: 300px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.modal-content {
+    text-align: left;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+
+
+.modal-footer {
+    text-align: right;
+    margin-top: 10px;
+}
+
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    cursor: pointer;
+}
+
+/* Form Styles */
+form {
+    background-color: #e7f1ff;
+    border: 1px solid #b0c4de;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+}
+
+form input[type="text"],
+form input[type="file"],
+form input[type="date"],
+form input[type="email"],
+form input[type="number"],
+form input[type="password"],
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px; /* Increased padding */
+    margin: 10px 0; /* Increased margin */
+    border: 1px solid #b0c4de;
+    border-radius: 4px;
+}
+
+form input[type="submit"],
+form button,
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Increased padding */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: center; /* Center text within the button */
+    margin-top: 20px; /* Add some space above the button */
+    display: block; /* Make the button a block element */
+    margin-left: auto; /* Center the button horizontally */
+    margin-right: auto; /* Center the button horizontally */
+}
+
+
+form input[type="submit"]:hover, form button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    nav ul {
+        flex-direction: column;
+    }
+}
+
+/* Footer */
+footer {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    width: 100%;
+    position: relative; /* Ensures footer can adjust relative to content */
+    margin-top: 30px; /* Adjusts spacing above footer */
+}
+
+
+/* Register/Login Box */
+.auth-box {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Button for Form Toggle */
+.toggle-btn {
+    padding: 10px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+}
+
+.toggle-btn.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* General Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px; /* Increased padding */
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: center;
+}
+/* Center the button in the page and adjust font size */
+.dashboard-buttons {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    margin-top: 20px; /* Add some space above if needed */
+}
+
+.dashboard-buttons .button {
+    font-size: 15px; /* Decreased font size */
+    padding: 8px 16px; /* Adjust padding for a balanced look */
+}
+
+/* Style the anchor tag to look like a button */
+a {
+    display: inline-block;
+    padding: 0px 16px; /* Adjust padding to match the button */
+    background-color: #007bff; /* Button background color */
+    color: white; /* Button text color */
+    border: 1px solid #007bff; /* Border to match background */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline */
+    font-size: 14px; /* Match font size with buttons */
+    transition: background-color 0.3s, transform 0.2s;
+    text-align: center;
+    margin: auto;
+}
+
+a:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: translateY(-2px); /* Hover effect */
+}
+
+/* Ensure uniformity between the button and anchor tag */
+.table-button {
+    display: inline-block;
+    padding: 8px 16px; /* Consistent padding with anchor */
+    background-color: #4A90E2; /* Matching color */
+    color: white; /* Button text color */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Consistent border-radius */
+    cursor: pointer; /* Pointer cursor for button */
+    font-size: 14px; /* Match font size */
+    text-decoration: none; /* Ensure no underline */
+    transition: background-color 0.3s;
+}
+
+.table-button:hover {
+    background-color: #3A78B5; /* Darker color on hover */
+}
+
+.add-worksite-button {
+    display: flex; /* Allows margin and centering */
+    text-align: center; /* Center text */
+    padding: 10px 20px; /* Padding around the button */
+    background-color: #007bff; /* Example background color */
+    color: white; /* Button text color */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline */
+    margin: 20px auto; /* Margin on top and bottom for spacing, auto on the sides for centering */
+    width: fit-content; /* Makes the button only as wide as its content */
+    justify-content: center;
+}
+
+.worksite-heading {
+    margin-top: 40px; /* Increase top margin */
+    text-decoration: underline; /* Underline the heading */
+}
+
+.button-container {
+    text-align: center; /* Center the button horizontally */
+    margin-top: 20px; /* Add some space above the button */
+}
+
+.checkbox-group {
+    display: flex; /* Use flexbox for layout */
+    flex-wrap: wrap; /* Allow wrapping of checkboxes */
+    gap: 15px; /* Increase space between checkboxes */
+    margin-top: 10px; /* Add some space above the checkboxes */
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 5px; /* Space between checkbox and label */
+}
+
+/* Employee Table */
+.employee-table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapsed borders */
+    margin-top: 20px; /* Consistent margin */
+    text-align: center; /* Center text in cells */
+}
+
+.employee-table thead {
+    background-color: #f2f2f2; /* Header background */
+    color: #4A90E2; /* Header text color */
+}
+
+.employee-table th, 
+.employee-table td {
+    padding: 10px; /* Consistent padding */
+    border: 1px solid #ddd; /* Uniform border style */
+}
+
+.employee-table tr:hover {
+    background-color: #f1f1f1; /* Hover effect for rows */
+}
+
+.employee-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row background */
+}
+
+.btn {
+    background-color: #007bff; /* Primary color */
+    color: white; /* Text color */
+    padding: 8px 15px; /* Consistent padding */
+    text-decoration: none; /* No underline for links */
+    border: none; /* No border for buttons */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth hover effect */
+    font-size: 16px; /* Consistent font size */
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+
+/* Styles for the heading */
+.page-heading {
+    margin-top: 20px; /* Adds top margin */
+    text-decoration: underline; /* Underlines the heading */
+}
+
+/* Styling for the table */
+.table-styled {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px; /* Adds bottom margin */
+}
+
+.table-styled th, .table-styled td {
+    border: 1px solid #ddd; /* Adds border for table cells */
+    padding: 8px;
+}
+
+.table-styled th {
+    background-color: #f2f2f2; /* Light background color for header */
+    text-align: left;
+}
+
+/* Styling for the "Add New Supplier" button */
+.text-center {
+    text-align: center; /* Centers the button horizontally */
+}
+
+/* Custom styling for the important payment details box */
+.important-box {
+    border: 2px solid #007bff; /* Blue border for emphasis */
+    border-radius: 10px;
+    background-color: #f8f9fa; /* Light background color */
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    text-align: center;
+}
+
+.important-box p {
+    font-size: 16px;
+    font-weight: 600; /* Make text bold for importance */
+    color: #333;
+    margin: 5px 0;
+}

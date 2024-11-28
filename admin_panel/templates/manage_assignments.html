@@ -1,0 +1,282 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1>Manage Assignments</h1>
+<br><br>
+
+
+<form method="POST" id="assignmentForm">
+    {% csrf_token %}
+    <div>
+        <label for="worksite">Select Worksite:</label>
+        <select name="worksite_id" id="worksite" onchange="handleWorksiteChange()">
+            <option value="">-- Select Worksite --</option>
+            {% for worksite in worksites %}
+                <option value="{{ worksite.id }}"{% if selected_worksite and selected_worksite.id == worksite.id %} selected {% endif %}>{{ worksite.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="employee">Select Employee:</label>
+        <select name="employee_id" id="employee" onchange="handleEmployeeChange()">
+            <option value="">-- Select Employee --</option>
+            {% for employee in employees %}
+                <option value="{{ employee.id }}"{% if selected_employee and selected_employee.id == employee.id %} selected {% endif %}>{{ employee.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="worksite-section" style="display: none;">
+        {% comment %} <h2>Worksite: {{ selected_worksite }}</h2> {% endcomment %}
+        <br>
+        <h3>Assigned Employees</h3>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Date Assigned</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        <br>
+
+        <h3>Assign New Employees:</h3>
+        <br><br>
+        <h4>Available Employees:</h4>
+        <br><br>
+        <div id="available-employees">
+            <!-- Available employees checkboxes will be populated by JavaScript -->
+        </div>
+        <br><br>
+        <button type="button" onclick="submitForm()">Assign Selected Employees</button>
+    </div>
+
+    <div id="employee-section" style="display: none;">
+        <h2>Employee: {{ selected_employee.name }}</h2>
+        <br><br>
+        <h3>Assigned Worksites</h3>
+        <br><br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Worksite Title</th>
+                    <th>Date Assigned</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% comment %} 
+                {% for assignment in selected_employee.assignments.all %}
+                <tr>
+                    <td>{{ assignment.worksite.title }}</td>
+                    <td>{{ assignment.date_assigned }}</td>
+                    <td>
+                        <button type="button" onclick="showWorksiteDetails('{{ assignment.worksite.id }}')">View</button>
+                    </td>
+                </tr>
+                {% endfor %} 
+                {% endcomment %}
+            </tbody>
+        </table>
+        <br><br>
+        <h3>Assign More Worksites:</h3>
+        <br><br>
+        <h4>Available Worksites:</h4>
+        <br><br>
+        <div id="available-worksites">
+            <!-- Available worksites checkboxes will be populated by JavaScript -->
+        </div>
+        <button type="button" onclick="submitForm()">Assign Selected Worksites</button>
+    </div>
+</form>
+
+<script>
+function handleWorksiteChange() {
+    const worksiteSelect = document.getElementById("worksite");
+    const employeeSection = document.getElementById("employee-section");
+    const worksiteSection = document.getElementById("worksite-section");
+
+    console.log("Worksite changed: " + worksiteSelect.value); // Log worksite selection
+
+    // Clear employee selection when a worksite is selected
+    if (worksiteSelect.value) {
+        fetch(`worksite/${worksiteSelect.value}/`)
+
+            .then(response => response.json())
+            .then(data => {
+                // Update the assignments and available employees
+                updateWorksiteAssignments(data);
+            });
+
+        employeeSection.style.display = "none"; // Hide employee section
+        worksiteSection.style.display = "block"; // Show worksite section
+    } else {
+        worksiteSection.style.display = "none"; // Hide worksite section if nothing is selected
+    }
+}
+
+function handleEmployeeChange() {
+    const employeeSelect = document.getElementById("employee");
+    const worksiteSection = document.getElementById("worksite-section");
+    const employeeSection = document.getElementById("employee-section");
+
+    console.log("Employee changed: " + employeeSelect.value); // Log employee selection
+
+    // Clear worksite selection when an employee is selected
+    if (employeeSelect.value) {
+
+            fetch(`employee/${employeeSelect.value}/`)
+            .then(response => response.json())
+            .then(data => {
+                // Update the assignments and available worksites
+                updateEmployeeAssignments(data);
+            });
+
+        worksiteSection.style.display = "none"; // Hide worksite section
+        employeeSection.style.display = "block"; // Show employee section
+    } else {
+        employeeSection.style.display = "none"; // Hide employee section if nothing is selected
+    }
+}
+
+function updateWorksiteAssignments(data) {
+    const assignmentsTableBody = document.querySelector('#worksite-section tbody');
+    assignmentsTableBody.innerHTML = ''; // Clear existing rows
+
+    data.assignments.forEach(assignment => {
+        const row = `<tr>
+                        <td>${assignment.employee_name}</td>
+                        <td>${assignment.date_assigned}</td>
+                        <td>
+                            <button type="button" onclick="showEmployeeDetails('${assignment.employee_id}')">View</button>
+                        </td>
+                     </tr>`;
+        assignmentsTableBody.innerHTML += row; // Add new rows
+    });
+
+    const availableEmployeesContainer = document.getElementById("available-employees");
+    availableEmployeesContainer.innerHTML = ''; // Clear existing checkboxes
+
+    data.available_employees.forEach(employee => {
+        const checkbox = `<div>
+                            <input type="checkbox" name="employee_ids" value="${employee.id}" onchange="console.log('Checkbox for employee ID: ${employee.id} toggled')">
+                            <label>${employee.name}</label>
+                          </div>`;
+        availableEmployeesContainer.innerHTML += checkbox; // Add new checkboxes
+    });
+}
+
+function updateEmployeeAssignments(data) {
+    const assignmentsTableBody = document.querySelector('#employee-section tbody');
+    assignmentsTableBody.innerHTML = ''; // Clear existing rows
+
+    data.assignments.forEach(assignment => {
+        const row = `<tr>
+                        <td>${assignment.worksite_title}</td>
+                        <td>${assignment.date_assigned}</td>
+                        <td>
+                            <button type="button" onclick="showWorksiteDetails('${assignment.worksite_id}')">View</button>
+                        </td>
+                     </tr>`;
+        assignmentsTableBody.innerHTML += row; // Add new rows
+    });
+
+    const availableWorksitesContainer = document.getElementById("available-worksites");
+    availableWorksitesContainer.innerHTML = ''; // Clear existing checkboxes
+
+    data.available_worksites.forEach(worksite => {
+        const checkbox = `<div>
+                            <input type="checkbox" name="assign_worksite_ids" value="${worksite.id}" onchange="console.log('Checkbox for worksite ID: ${worksite.id} toggled')">
+                            <label>${worksite.title}</label>
+                          </div>`;
+        availableWorksitesContainer.innerHTML += checkbox; // Add new checkboxes
+    });
+}
+
+function submitForm() {
+    console.log("Form submitted"); // Log form submission
+    document.getElementById("assignmentForm").submit();
+}
+
+function showEmployeeDetails(employeeId) {
+    console.log("Showing details for employee ID: " + employeeId); // Log employee detail view
+    document.getElementById("employeeModalTitle").innerText = "Employee Details";
+    document.getElementById("employeeModalBody").innerText = "Details for employee ID: " + employeeId; 
+    document.getElementById("employeeModal").style.display = "block";
+}
+
+function showWorksiteDetails(worksiteId) {
+    console.log("Showing details for worksite ID: " + worksiteId); // Log worksite detail view
+    document.getElementById("worksiteModalTitle").innerText = "Worksite Details";
+    document.getElementById("worksiteModalBody").innerText = "Details for worksite ID: " + worksiteId; 
+    document.getElementById("worksiteModal").style.display = "block";
+}
+
+function closeModal(modalId) {
+    console.log("Closing modal: " + modalId); // Log modal close action
+    document.getElementById(modalId).style.display = "none";
+}
+</script>
+
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
+
+<div id="employeeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('employeeModal')">&times;</span>
+        <h2 id="employeeModalTitle"></h2>
+        <p id="employeeModalBody"></p>
+    </div>
+</div>
+
+<div id="worksiteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('worksiteModal')">&times;</span>
+        <h2 id="worksiteModalTitle"></h2>
+        <p id="worksiteModalBody"></p>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h1>Add Employee</h1>
+<br>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="employee_code">Employee Code</label>
+        <input type="text" class="form-control" name="employee_code" required>
+    </div>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="age">Age</label>
+        <input type="number" class="form-control" name="age" required>
+    </div>
+    <div class="form-group">
+        <label for="address">Address</label>
+        <textarea class="form-control" name="address" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="department">Department</label>
+        <input type="text" class="form-control" name="department" required>
+    </div>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" name="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" required>
+    </div>
+    <div class="form-group">
+        <label for="aadhar_number">Aadhar Number</label>
+        <input type="text" class="form-control" name="aadhar_number">
+    </div>
+    <div class="form-group">
+        <label for="pan_card_number">PAN Card Number</label>
+        <input type="text" class="form-control" name="pan_card_number">
+    </div>
+    <div class="form-group">
+        <label for="photo">Photo</label>
+        <input type="file" class="form-control" name="photo">
+    </div>
+    <div class="form-group">
+        <label for="id_document">ID Document</label>
+        <input type="file" class="form-control" name="id_document">
+    </div>
+    <button type="submit" class="btn btn-primary">Add Employee</button>
+</form>
+{% endblock %}

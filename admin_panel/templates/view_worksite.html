@@ -1,0 +1,12 @@
+
+<!-- admin_panel/templates/admin_panel/view_worksite.html -->
+{% extends 'base_admin.html' %}
+{% load static %}
+{% block title %}View Worksite{% endblock %}
+
+{% block content %}
+<h2>Worksite Details</h2>
+<p><strong>Name:</strong> {{ worksite.name }}</p>
+<p><strong>Location:</strong> {{ worksite.location }}</p>
+<a href="{% url 'admin_panel:edit_worksite' worksite.pk %}">Edit Worksite</a>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<br><br>
+<h2>Input Purchase</h2>
+<br><br>
+<form method="post">
+    {% csrf_token %}
+    <label for="work">Work:</label>
+    <select name="work" required>
+        {% for work in works %}
+            <option value="{{ work.id }}" {% if work.id|stringformat:"i" == selected_work_id %}selected{% endif %}>
+                {{ work.description }}
+            </option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="date">Date:</label>
+    <input type="date" name="date" required><br><br>
+
+    <label for="invoice_number">Invoice Number:</label>
+    <input type="text" name="invoice_number" required><br><br>
+
+    <label for="item">Item:</label>
+    <select name="item" required>
+        {% for item in items %}
+            <option value="{{ item.id }}">{{ item.name }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" name="quantity" required><br><br>
+
+    <label for="supplier">Supplier:</label>
+    <select name="supplier" required>
+        {% for supplier in suppliers %}
+            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="amount">Amount:</label>
+    <input type="number" step="0.01" name="amount" required><br><br>
+
+    <label for="spent_by">Spent By:</label>
+    <input type="text" name="spent_by" value="Nivin"><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}

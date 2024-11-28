@@ -1,0 +1,157 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% block title %}Edit Worksite{% endblock %}
+{% block content %}
+<br><br>
+<h2>Edit Worksite</h2>
+<br><br>
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <label for="name">Name:</label>
+  <input
+    type="text"
+    id="name"
+    name="name"
+    value="{{ work.customer.name }}"
+    required
+  />
+  <br />
+
+  <label for="location">Location:</label>
+  <textarea id="location" name="location" required>{{ work.customer.location }}</textarea>
+  <br />
+
+  <label for="contact_number">Contact Number:</label>
+  <input
+    type="text"
+    id="contact_number"
+    name="contact_number"
+    value="{{ work.customer.contact_number }}"
+    required
+  />
+  <br />
+
+  <label for="email">Email:</label>
+  <input
+    type="email"
+    id="email"
+    name="email"
+    value="{{ work.customer.email }}"
+    required
+  />
+  <br />
+
+  <label for="start_date">Start Date:</label>
+  <input
+    type="date"
+    id="start_date"
+    name="start_date"
+    value="{{ work.start_date|date:'Y-m-d' }}"
+    required
+  />
+  <br />
+
+  <label for="end_date">End Date:</label>
+  <input
+    type="date"
+    id="end_date"
+    name="end_date"
+    value="{{ work.end_date|date:'Y-m-d' }}"
+  />
+  <br />
+
+  <label for="actual_end_date">Actual End Date:</label>
+  <input
+    type="date"
+    id="actual_end_date"
+    name="actual_end_date"
+    value="{{ work.actual_end_date|date:'Y-m-d' }}"
+  />
+  <br />
+
+  <label for="title">Title:</label>
+  <input
+    type="text"
+    id="title"
+    name="title"
+    value="{{ work.title }}"
+    required
+  />
+
+  <label for="work_type">Type of Work:</label><br />
+  <input type="checkbox" name="work_type" value="A/C" {% if 'A/C' in work.type_of_work %}checked{% endif %}/> Air Conditioning<br />
+  <input type="checkbox" name="work_type" value="CCTV" {% if 'CCTV' in work.type_of_work %}checked{% endif %}/> CCTV<br />
+  <input type="checkbox" name="work_type" value="Electric" {% if 'Electric' in work.type_of_work %}checked{% endif %}/> Electrical<br />
+  <input type="checkbox" name="work_type" value="Plumbing" {% if 'Plumbing' in work.type_of_work %}checked{% endif %}/> Plumbing<br />
+  <input type="checkbox" name="work_type" value="Solar" {% if 'Solar' in work.type_of_work %}checked{% endif %}/> Solar<br />
+  <input type="checkbox" id="work_type_all" name="work_type" value="All" {% if 'All' in work.type_of_work %}checked{% endif %}/> All<br />
+
+  <label for="priority">Priority:</label>
+  <select name="priority" required>
+    <option value="low" {% if work.priority == 'low' %}selected{% endif %}>Low</option>
+    <option value="medium" {% if work.priority == 'medium' %}selected{% endif %}>Medium</option>
+    <option value="high" {% if work.priority == 'high' %}selected{% endif %}>High</option>
+  </select>
+  <br />
+
+  <label for="status">Status:</label>
+  <select name="status" required>
+    <option value="assigned" {% if work.status == 'assigned' %}selected{% endif %}>Assigned</option>
+    <option value="working" {% if work.status == 'working' %}selected{% endif %}>Working</option>
+    <option value="pending" {% if work.status == 'pending' %}selected{% endif %}>Pending</option>
+    <option value="completed" {% if work.status == 'completed' %}selected{% endif %}>Completed</option>
+  </select>
+  <br />
+
+  <label for="commitment">Commitment:</label>
+  <textarea id="commitment" name="commitment">{{ work.commitment }}</textarea>
+  <br />
+
+  <label for="remark">Remark:</label>
+  <textarea id="remark" name="remark">{{ work.remark }}</textarea>
+  <br />
+
+  <label for="total_amount">Total Amount:</label>
+  <input
+    type="text"
+    id="total_amount"
+    name="total_amount"
+    value="{{ work.total_amount }}"
+    required
+  />
+
+  <h3>Upload Floor Plans</h3>
+  <input type="file" name="floor_plans" multiple accept=".pdf,.jpg,.png,.jpeg" />
+  <h4>Existing Floor Plans</h4>
+  {% for floor_plan in floor_plans %}
+    <div>
+      <p>Floor Plan: <a href="{{ floor_plan.file.url }}" target="_blank">View</a></p>
+      <input type="checkbox" name="delete_floor_plan_{{ floor_plan.id }}" id="delete_floor_plan_{{ floor_plan.id }}"> Delete Floor Plan
+    </div>
+  {% endfor %}
+
+  <h3>Upload Other Documents</h3>
+  <input type="file" name="other_documents" multiple accept=".pdf,.jpg,.png,.jpeg" />
+  <h4>Existing Other Documents</h4>
+  {% for doc in other_documents %}
+    <div>
+      <p>Document: <a href="{{ doc.file.url }}" target="_blank">View</a></p>
+      <input type="checkbox" name="delete_document_{{ doc.id }}" id="delete_document_{{ doc.id }}"> Delete Document
+    </div>
+  {% endfor %}
+
+  <button type="submit">Save Worksite</button>
+</form>
+
+<script>
+  document.getElementById('work_type_all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('input[name="work_type"]:not(#work_type_all)');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false; // Uncheck all other checkboxes
+      checkbox.disabled = this.checked; // Disable other checkboxes if 'All' is checked
+    });
+  });
+</script>
+
+{% endblock %}

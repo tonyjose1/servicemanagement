@@ -1,0 +1,16 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<h1>Chat Room Selection</h1>
+<a href="{% url 'chat:group_chat' %}" class="btn btn-primary">Enter Group Chat</a>
+<br><br>
+<h2>Personal Chat</h2>
+<form action="" method="GET">
+    <select name="employee" id="employee-dropdown" class="form-control">
+        {% for employee in employees %}
+            <option value="{{ employee.id }}">{{ employee.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Start Chat</button>
+</form>
+{% endblock %}

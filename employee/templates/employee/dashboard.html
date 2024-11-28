@@ -1,0 +1,130 @@
+{% extends "employee/base_employee.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <br><br>
+    <h1 class="text-center">Employee Dashboard</h1>
+    
+    <br><br>
+
+    <a href="{% url 'group_chat' %}" class="btn btn-info">Go to Group Chat</a><br><br>
+    <h2>Assigned Tasks</h2>
+    <br><br>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Worksite Title</th>
+                <th>Details</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.worksite.title }}</td>
+                <td>{{ task.worksite.description }}</td>
+                <td>
+                    <button class="btn btn-info" onclick="viewWorksite({{ task.worksite.id }})">View</button>
+                    <a href="{% url 'employee:update_work' task.worksite.id %}" class="btn btn-warning">Update</a>
+                    <a href="{% url 'employee:talk_to_admin' task.worksite.id %}" class="btn btn-secondary">Talk to Admin</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h5 class="modal-title">Worksite Details</h5>
+                    
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Worksite details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="modalCloseBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+</div>
+
+
+
+<script>
+    // Function to fetch worksite details and display in modal
+    function viewWorksite(work_id) {
+        fetch("{% url 'employee:view_worksite' 0 %}".replace('0', work_id))
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Populate modal with all worksite details from JSON response
+                document.getElementById('modalContent').innerHTML = `
+                    <h2>${data.title}</h2>
+                    <p><strong>Description:</strong> ${data.description}</p>
+                    <p><strong>Customer:</strong> ${data.customer}</p>
+                    <p><strong>Type of Work:</strong> ${data.type_of_work}</p>
+                    <p><strong>Start Date:</strong> ${data.start_date}</p>
+                    <p><strong>End Date:</strong> ${data.end_date || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${data.status}</p>
+                    <p><strong>Priority:</strong> ${data.priority}</p>
+                `;
+                // Show the modal
+                var modal = new bootstrap.Modal(document.getElementById('supplierModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error("Error fetching worksite data:", error);
+                alert("Failed to load worksite details. Please try again.");
+            });
+    }
+</script>
+<script>
+
+
+    // Get modal element
+var modal = document.getElementById("supplierModal");
+
+// Get close button
+var closeBtn = document.getElementsByClassName("close")[0];
+var modalCloseBtn = document.getElementById("modalCloseBtn");
+
+// Open modal function (you should already have this part)
+function openModal() {
+    modal.style.display = "flex"; // Show modal
+}
+
+// Close modal function
+function closeModal() {
+    modal.style.display = "none"; // Hide modal
+}
+
+// Add event listener to the close button (×)
+closeBtn.addEventListener("click", closeModal);
+
+// Add event listener to the "Close" button
+modalCloseBtn.addEventListener("click", closeModal);
+
+// Close modal when clicking outside of the modal content
+window.onclick = function(event) {
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
+</script>
+
+
+
+{% endblock %}

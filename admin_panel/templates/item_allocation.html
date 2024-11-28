@@ -1,0 +1,117 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+<h1>Item Allocation</h1>
+<form method="POST" id="allocationForm">
+    {% csrf_token %}
+
+    <div id="allocationContainer">
+        <div class="allocation-row">
+            <h4>Allocate Item</h4>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select class="form-control category-select" name="allocations[0][category]" required>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="item">Item:</label>
+                <select class="form-control item-select" name="allocations[0][item]" required>
+                    <option>Select Category First</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="supplier">Supplier:</label>
+                <select class="form-control supplier-select" name="allocations[0][supplier]" required>
+                    <option>Select Item First</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" class="form-control" name="allocations[0][quantity]" min="1" required>
+            </div>
+        </div>
+    </div>
+    
+    <button type="button" id="addRowBtn" class="btn btn-secondary">Add More Items</button>
+    <button type="submit" class="btn btn-primary">Submit Allocation</button>
+</form>
+
+<script>
+
+    
+    document.getElementById('addRowBtn').addEventListener('click', function() {
+        let container = document.getElementById('allocationContainer');
+        let newRow = container.firstElementChild.cloneNode(true);
+        let index = container.children.length;
+    
+        // Update name attributes for cloned elements
+        newRow.querySelectorAll('input, select').forEach(function(element) {
+            let name = element.getAttribute('name');
+            if (name) {
+                let newName = name.replace(/\[\d+\]/, `_${index}`);
+                element.setAttribute('name', newName);
+                element.value = ''; // Clear any existing values
+            }
+        });
+    
+        container.appendChild(newRow);
+    });
+    
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listener for category change
+        document.querySelectorAll('.category-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                let category = this.value;
+                let itemSelect = this.closest('.allocation-row').querySelector('.item-select');
+                let supplierSelect = this.closest('.allocation-row').querySelector('.supplier-select');
+    
+                // Clear previous options
+                itemSelect.innerHTML = '<option>Loading...</option>';
+                supplierSelect.innerHTML = '<option>Select Item First</option>';
+    
+                // Fetch items based on the selected category
+                fetch(`/admin_panel/get-items/${category}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        itemSelect.innerHTML = '<option>Select Item</option>';
+                        data.forEach(item => {
+                            itemSelect.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                        });
+                    });
+            });
+        });
+    
+        // Event listener for item change
+        document.querySelectorAll('.item-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                let category = this.closest('.allocation-row').querySelector('.category-select').value;
+                let itemId = this.value;
+                let supplierSelect = this.closest('.allocation-row').querySelector('.supplier-select');
+    
+                // Clear previous options
+                supplierSelect.innerHTML = '<option>Loading...</option>';
+    
+                // Fetch suppliers based on the selected category and item
+                fetch(`/admin_panel/get-suppliers/${category}/${itemId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        supplierSelect.innerHTML = '<option>Select Supplier</option>';
+                        data.forEach(supplier => {
+                            supplierSelect.innerHTML += `<option value="${supplier.id}">${supplier.name}</option>`;
+                        });
+                    });
+            });
+        });
+    });
+    </script>
+    
+{% endblock %}
+
+
+
+

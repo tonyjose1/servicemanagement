@@ -1,0 +1,88 @@
+<!-- generate_bill.html -->
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<h2>Generate Bill for {{ worksite.title }}</h2>
+
+<form id="bill-form" method="POST" action="{% url 'submit_bill' %}">
+    {% csrf_token %}
+    <input type="hidden" name="worksite_id" value="{{ worksite.id }}">
+
+    <h3>Select Items</h3>
+    <div id="item-list">
+        {% for item in items %}
+        <div class="item-selection">
+            <label for="item_{{ item.id }}">{{ item.name }} ({{ item.price }})</label>
+            <input type="number" name="item_quantity_{{ item.id }}" placeholder="Quantity" min="0">
+        </div>
+        {% endfor %}
+    </div>
+
+    <h3>Discount</h3>
+    <label for="discount_type">Type:</label>
+    <select name="discount_type">
+        <option value="amount">Amount</option>
+        <option value="percentage">Percentage</option>
+    </select>
+    <label for="discount_value">Value:</label>
+    <input type="number" name="discount_value" placeholder="Enter discount value">
+
+    <button type="submit">Generate Bill</button>
+</form>
+
+<script>
+    document.getElementById('bill-form').onsubmit = function(event) {
+        event.preventDefault(); // Prevent default form submission
+        const formData = new FormData(this);
+        const request = new XMLHttpRequest();
+        request.open('POST', this.action);
+        request.responseType = 'blob'; // Expect a blob response
+
+        request.onload = function() {
+            const blob = new Blob([request.response], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            window.open(url); // Open the PDF in a new tab
+        };
+
+        request.send(formData); // Send the form data
+    };
+</script>
+
+{% endblock %}
+
+
+
+
+
+{% comment %} <!-- generate_bill.html -->
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<h2>Generate Bill for {{ worksite.title }}</h2>
+
+<form method="POST" action="{% url 'submit_bill' %}">
+    {% csrf_token %}
+    <input type="hidden" name="worksite_id" value="{{ worksite.id }}">
+
+    <h3>Select Items</h3>
+    <div id="item-list">
+        {% for item in items %}
+        <div class="item-selection">
+            <label for="item_{{ item.id }}">{{ item.name }} ({{ item.price }})</label>
+            <input type="number" name="item_quantity_{{ item.id }}" placeholder="Quantity" min="0">
+        </div>
+        {% endfor %}
+    </div>
+
+    <h3>Discount</h3>
+    <label for="discount_type">Type:</label>
+    <select name="discount_type">
+        <option value="amount">Amount</option>
+        <option value="percentage">Percentage</option>
+    </select>
+    <label for="discount_value">Value:</label>
+    <input type="number" name="discount_value" placeholder="Enter discount value">
+
+    <button type="submit">Generate Bill</button>
+</form>
+{% endblock %} {% endcomment %}

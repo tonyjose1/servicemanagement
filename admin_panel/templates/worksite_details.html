@@ -1,0 +1,177 @@
+
+{% extends 'base_admin.html' %}
+{% block content %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    /* General Styling */
+    body {
+         /* Space for the top navbar */
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 70px; /* Align with the top navbar */
+        left: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+    }
+
+    .sidebar a {
+        display: block;
+        color: #007bff;
+        padding: 7px 0;
+        text-decoration: none;
+    }
+
+    .sidebar a:hover {
+        text-decoration: underline;
+    }
+
+    .content {
+        margin-left: 270px; /* Space for the sidebar */
+        padding: 20px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    .info-block {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .document-link {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .document-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="sidebar">
+    <h3>Sections</h3>
+    <a href="#worksite-info">Worksite Information</a>
+    <a href="#employee-info">Assigned Employees</a>
+    <a href="#update-info">Daily Updates</a>
+    <a href="#spending-info">Spendings</a>
+    <a href="#payment-info">Payments</a>
+    <a href="#financial-summary">Financial Summary</a>
+    <a href="#document-info">Documents</a>
+    <hr>
+    <h4>Actions</h4>
+    <a href="{% url 'edit_worksite' work.id %}" class="btn btn-warning btn-block">Edit</a>
+    <a href="#" class="btn btn-warning btn-block" onclick="confirmDelete({{ work.id }})">Delete</a>
+    <a href="{% url 'view_updates' work.id %}" class="btn btn-warning btn-block">View Updates</a>
+    <a href="{% url 'generate_bill' work.id %}" class="btn btn-warning btn-block">Generate Bill</a>
+    <a href="{% url 'item_allocation' work.id %}" class="btn btn-warning btn-block">Allocate Items</a>
+    
+    <a href="{% url 'view_payments' work.id %}" class="btn btn-warning btn-block">View Payments</a>
+    <a href="{% url 'add_payment' work.id %}" class="btn btn-warning btn-block">Add Payment</a>
+</div>
+
+<div class="content">
+    <h1 class="my-4">Worksite Details</h1>
+
+    <!-- Worksite Information -->
+    <div id="worksite-info" class="worksite-info info-block">
+        <h2 class="section-title">Worksite Information</h2>
+        <p><strong>Title:</strong> {{ work.title }}</p>
+        <p><strong>Description:</strong> {{ work.description }}</p>
+        <p><strong>Type of Work:</strong> {{ work.type_of_work }}</p>
+        <p><strong>Start Date:</strong> {{ work.start_date }}</p>
+        <p><strong>End Date:</strong> {{ work.end_date }}</p>
+        <p><strong>Status:</strong> {{ work.status }}</p>
+        <p><strong>Priority:</strong> {{ work.priority }}</p>
+        <p><strong>Total Amount:</strong> {{ work.total_amount }}</p>
+    </div>
+
+    <!-- Assigned Employees -->
+    <div id="employee-info" class="employee-info info-block">
+        <h2 class="section-title">Assigned Employees</h2>
+        <ul>
+            {% for assignment in work.assignments.all %}
+                <li>{{ assignment.employee.name }} (Assigned on: {{ assignment.date_assigned }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Daily Updates -->
+    <div id="update-info" class="update-info info-block">
+        <h2 class="section-title">Daily Updates</h2>
+        {% for update in daily_updates %}
+            <div class="update-entry">
+                <p><strong>Date:</strong> {{ update.date }}</p>
+                <p><strong>Employee:</strong> {{ update.employee.name }}</p>
+                <p><strong>Update:</strong> {{ update.update_text }}</p>
+                {% if update.work_image %}
+                    <img src="{{ update.work_image.url }}" alt="Work Image" class="img-fluid my-2">
+                {% endif %}
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+
+    <!-- Spendings -->
+    <div id="spending-info" class="spending-info info-block">
+        <h2 class="section-title">Spendings</h2>
+        {% for spending in spendings %}
+            <p><strong>Date:</strong> {{ spending.date }} | <strong>Invoice:</strong> {{ spending.invoice_number }} | <strong>Item:</strong> {{ spending.item.name }} | <strong>Amount:</strong> {{ spending.amount }} | <strong>Supplier:</strong> {{ spending.supplier.name }}</p>
+        {% endfor %}
+    </div>
+
+    <!-- Payments -->
+    <div id="payment-info" class="payment-info info-block">
+        <h2 class="section-title">Payments</h2>
+        {% for payment in payments %}
+            <p><strong>Date:</strong> {{ payment.payment_date }} | <strong>Amount:</strong> {{ payment.amount }} | <strong>Method:</strong> {{ payment.payment_method }} | <strong>Reference:</strong> {{ payment.reference_number }}</p>
+        {% endfor %}
+    </div>
+
+    <!-- Financial Summary -->
+    <div id="financial-summary" class="financial-summary info-block">
+        <h2 class="section-title">Financial Summary</h2>
+        <p><strong>Total Amount:</strong> {{ total_amount }}</p>
+        <p><strong>Total Spendings:</strong> {{ total_spendings }}</p>
+        <p><strong>Total Amount Received:</strong> {{ total_received }}</p>
+        <p><strong>Outstanding Payment:</strong> {{ outstanding_payment }}</p>
+    </div>
+
+
+    <!-- Documents -->
+    <div id="document-info" class="document-info info-block">
+        <h2 class="section-title">Documents</h2>
+        <p><strong>Floor Plans:</strong></p>
+        <ul>
+            {% for plan in work.floor_plans.all %}
+                <li><a href="{{ plan.file.url }}" target="_blank" class="document-link">View Floor Plan</a></li>
+            {% endfor %}
+        </ul>
+        <p><strong>Other Documents:</strong></p>
+        <ul>
+            {% for document in work.other_documents.all %}
+                <li><a href="{{ document.file.url }}" target="_blank" class="document-link">View Document</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
+
+
+

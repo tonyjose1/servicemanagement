@@ -1,0 +1,204 @@
+<!-- admin_panel/templates/admin_panel/add_worksite.html -->
+{% extends 'base_admin.html' %}
+
+{% block title %}Add Worksite{% endblock %}
+
+{% block content %}
+<br><br>
+<h1 class="worksite-heading">Add Worksite</h1>
+<br>
+
+<form id="worksiteForm" method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+    <!-- Customer Table Fields -->
+    <h3>Customer Information</h3>
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="contact_number">Contact Number:</label>
+        <input type="text" id="contact_number" name="contact_number" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+    </div>
+
+    <!-- Work Table Fields -->
+    <h3>Work Details</h3>
+    <div class="form-group">
+        <label for="title">Title :</label>
+        <input type="text" id="title" name="title" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label>Type of Work:</label><br>
+        <div class="checkbox-group">
+            <input type="checkbox" id="work_ac" name="work_type" value="A/C"> <label for="work_ac">AC</label>
+            <input type="checkbox" id="work_cctv" name="work_type" value="CCTV"> <label for="work_cctv">CCTV</label>
+            <input type="checkbox" id="work_electric" name="work_type" value="Electric"> <label for="work_electric">Electric</label>
+            <input type="checkbox" id="work_plumbing" name="work_type" value="Plumbing"> <label for="work_plumbing">Plumbing</label>
+            <input type="checkbox" id="work_solar" name="work_type" value="Solar"> <label for="work_solar">Solar</label>
+            <input type="checkbox" id="work_automation" name="work_type" value="Automation"> <label for="work_automation">Automation</label>
+            <input type="checkbox" id="work_lightning_arrestor" name="work_type" value="Lightning Arrestor"> <label for="work_lightning_arrestor">Lightning Arrestor</label>
+            <input type="checkbox" id="work_all" name="work_type" value="All"> <label for="work_all">All</label>
+            <input type="checkbox" id="work_other" name="work_type" value="Other"> <label for="work_other">Other</label>
+        </div>
+    </div>
+    <div class="form-group" id="other_div" style="display: none" >
+        <label for="other"> Specify :</label>
+        <input type="text" id="other" name="other" class="form-control" required>
+    </div>
+    <br>
+    <div class="form-group">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="actual_end_date">Actual End Date:</label>
+        <input type="date" id="actual_end_date" name="actual_end_date" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="status">Status:</label>
+        <select id="status" name="status" class="form-control" required>
+            <option value="yet_to_start">Yet to Start</option>
+            <option value="assigned">Assigned</option>
+            <option value="working">Working</option>
+            <option value="completed">Completed</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="priority">Priority:</label>
+        <select id="priority" name="priority" class="form-control" required>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="action">Action:</label>
+        <textarea id="action" name="action" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="commitment">Commitment:</label>
+        <textarea id="commitment" name="commitment" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="remark">Remark:</label>
+        <textarea id="remark" name="remark" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="total_amount">Total Amount:</label>
+        <input type="number" id="total_amount" name="total_amount" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="floor_plans">Upload Floor Plans:</label>
+        <input type="file" id="floor_plans" name="floor_plans" class="form-control" multiple>
+    </div>
+    <div class="form-group">
+        <label for="other_documents">Upload Other Documents:</label>
+        <input type="file" id="other_documents" name="other_documents" class="form-control" multiple>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Add Worksite</button>
+</form>
+
+<script>
+    document.getElementById('worksiteForm').addEventListener('submit', function (event) {
+        let name = document.getElementById('name').value.trim();
+        let location = document.getElementById('location').value.trim();
+        let clientName = document.getElementById('client_name').value.trim();
+        let contactNumber = document.getElementById('contact_number').value.trim();
+
+        // Validate empty fields
+        if (!name || !location || !clientName || !contactNumber) {
+            alert('All fields are required.');
+            event.preventDefault();
+            return;
+        }
+
+        // Validate phone number (10 digits)
+        const phonePattern = /^\d{10}$/;
+        if (!phonePattern.test(contactNumber)) {
+            alert('Invalid phone number. It should be 10 digits.');
+            event.preventDefault();
+            return;
+        }
+
+        // Checkbox logic for "All"
+        const allCheckbox = document.getElementById('work_all');
+        const otherCheckbox = document.getElementById('work_other');
+        const otherCheckboxes = [
+            document.getElementById('work_ac'),
+            document.getElementById('work_cctv'),
+            document.getElementById('work_electric'),
+            document.getElementById('work_plumbing'),
+            document.getElementById('work_solar'),
+            document.getElementById('work_automation'),
+            document.getElementById('work_lightning_arrestor')
+        ];
+        
+        if (otherCheckbox.checked) {
+            
+            document.getElementById('other_div').style.display = "block";
+        }
+        else {
+            document.getElementById('other_div').style.display = "none";
+        }
+        // If "All" is checked, disable other checkboxes
+        if (allCheckbox.checked) {
+            otherCheckboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = true;
+            });
+        } else {
+            // Enable checkboxes if "All" is not checked
+            otherCheckboxes.forEach(cb => {
+                cb.disabled = false;
+            });
+        }
+    });
+
+    // Add event listener for "All" checkbox
+    document.getElementById('work_all').addEventListener('change', function () {
+        const otherCheckboxes = [
+            document.getElementById('work_ac'),
+            document.getElementById('work_cctv'),
+            document.getElementById('work_electric'),
+            document.getElementById('work_plumbing'),
+            document.getElementById('work_solar'),
+            document.getElementById('work_automation'),
+            document.getElementById('work_lightning_arrestor')
+        ];
+
+        if (this.checked) {
+            otherCheckboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = true;
+            });
+        } else {
+            otherCheckboxes.forEach(cb => {
+                cb.disabled = false;
+            });
+        }
+    });
+</script>
+{% endblock %}
+

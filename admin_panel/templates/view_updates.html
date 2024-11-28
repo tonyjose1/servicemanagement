@@ -1,0 +1,101 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+
+<br><br>
+<h2>Updates for {{ work.title }}</h2>
+<br><br>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Employee</th>
+            <th>Update</th>
+            <th>Image</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for update in updates %}
+        <tr>
+            <td>{{ update.date }}</td>
+            <td>{{ update.employee.name }}</td>
+            <td>{{ update.update_text }}</td>
+            <td>
+                {% if update.work_image %}
+                <img 
+                    src="{{ update.work_image.url }}" 
+                    alt="Work Image" 
+                    style="max-width: 100px; cursor: pointer;"
+                    onclick="openModal('{{ update.work_image.url }}')"
+                >
+                {% else %}
+                No Image
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No updates available for this worksite.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Modal for Image Preview -->
+<div id="imageModal" class="modal3" style="display:none ">
+    <span class="close3" onclick="closeModal()">&times;</span>
+    <img class="modal-content3" id="modalImage">
+</div>
+
+<style>
+    /* Modal Styles */
+    .modal3 {
+        display: none; 
+        position: fixed; 
+        z-index: 1000; 
+        left: 10%;
+        top: 10%;
+        padding: auto;
+        margin:auto;
+        width: 80%; 
+        height: 80%; 
+        background-color: rgba(0, 0, 0, 0.8); 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content3 {
+        display: block;
+        padding: auto;
+        margin: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .close3 {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    // JavaScript to open and close the modal
+    function openModal(imageUrl) {
+        var modal = document.getElementById("imageModal");
+        var modalImage = document.getElementById("modalImage");
+        modal.style.display = "block";
+        modalImage.src = imageUrl;
+    }
+
+    function closeModal() {
+        var modal = document.getElementById("imageModal");
+        modal.style.display = "none";
+    }
+</script>
+{% endblock %}
